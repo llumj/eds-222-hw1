@@ -1,10 +1,16 @@
 ---
 title: "EDS 222: Homework 1"
-date: "Assigned 09/30/2024, due 10/13/2024"
+date: "10/13/2024"
 author: "Joshua Mull"
 editor_options: 
   chunk_output_type: console
+execute:
+  warning: false
+format: 
+  html: 
+    code-fold: true
 ---
+
 
 ## Background
 
@@ -29,7 +35,7 @@ In answering the following questions, please consider the lecture content from c
 ### Question 1
 
 #### Load Libraries 
-```{r}
+```{r echo=TRUE}
 library(tidyverse)
 library(here)
 ```
@@ -53,16 +59,16 @@ There are 5488 rows in crowdsourced and 1960 rows in govt.
 
 ```{r}
 # Use nrow to search number of rows in data frames
-print(nrow(crowdsourced))
+print(paste("Crowdsource has",nrow(crowdsourced), "rows"))
 
-print(nrow(govt))
+print(paste("Govt has",nrow(govt), "rows"))
 ```
 
 2.  Each monitor is located at a unique latitude and longitude location. How many unique monitors are in each dataset?
 
 For this question I did it two different ways. First, I used groupby() and mutated a new column. Then, I printed the length of unique values in that series. 
 
-The second way I used distict() to find unique pairs in lat and long and then counted them. This was seemed cleaner in code. 
+The second way I used distinct() to find unique pairs in lat and long and then counted them. This was seemed cleaner in code. 
 
 ```{r}
 # Use groupby() and mutate to find the number of unique combinations and store them in a new series called lat_long 
@@ -70,8 +76,8 @@ unique_crowdsourced <- crowdsourced %>%
   group_by(latitude, longitude) %>%
   mutate(lat_long = cur_group_id()) 
   
-# Use unique() to find the number of unique vales in lat_long. Use length to count the number of unique pairs. Print 
-print(length(unique(unique_crowdsourced$lat_long)))
+# Use unique() to find the number of unique values in lat_long. Use length to count the number of unique pairs. Print 
+print(paste("The number of unique values in crowdsource lat_long is",length(unique(unique_crowdsourced$lat_long))))
 
 # Use distinct to find the unique combinations of latitude and longitude and Count() to count them
 unique_govt <- govt %>%
@@ -79,7 +85,7 @@ unique_govt <- govt %>%
   count()
 
 # Print 
-print(unique_govt)
+print(paste("The number of unique values in govt lat_long is",unique_govt))
 
 ```
 
@@ -113,37 +119,37 @@ There could be numerous biases in the data offered. Some included disproportiona
 mean_crowsourced_pm <- mean(crowdsourced$PM)
 
 # Print
-print(mean_crowsourced_pm)
+print(paste("Crowsourced PM mean is", round(mean_crowsourced_pm, 2), "µg/m³"))
 
 # Use mean and buck to find the mean of PM series in govt data frame
 mean_govt_pm <- mean(govt$PM)
 
 # Print 
-print(mean_govt_pm)
+print(paste("Governemnt PM mean is", round(mean_govt_pm, 2), "µg/m³"))
 
 # Find PM sample min of crowdsourced
 min_crowsourced_pm <- min(crowdsourced$PM)
 
 # Print
-print(min_crowsourced_pm)
+print(paste("Crowdsourced PM min is", min_crowsourced_pm, "µg/m³"))
 
 # Find PM sample min of govt
 min_govt_pm <- min(govt$PM)
 
 # Print 
-print(min_govt_pm)
+print(paste("Government PM min is", min_govt_pm, "µg/m³"))
 
 # Find Pm sample max of crowdsource
 max_crowdsourced_pm <- max(crowdsourced$PM)
 
 # Print 
-print(max_crowdsourced_pm)
+print(paste("Crowdsourced PM max is", max_crowdsourced_pm, "µg/m³"))
 
 # Find Pm sample max of govt 
 max_govt_pm <- max(govt$PM)
 
 # Print  
-print(max_govt_pm)
+print(paste("Government PM max is", max_govt_pm, "µg/m³"))
 ```
 
 2.  Discuss any key differences that you see between these two samples.
@@ -170,6 +176,8 @@ air_mon_location <- ggplot() +
                  y = latitude), 
                  color = "blue") + 
   labs(title = "Air Monitor locations around Lahore, Pakistan", x = "Longitude", y = "Latitude")
+
+print(air_mon_location)
 ```
 
 
@@ -180,6 +188,8 @@ air_mon_location <- ggplot() +
 ### Question 5
 
 The local newspaper in Pakistan, *Dawn*, claims that the government is misreporting the air pollution levels in Lahore. Do the locations of monitors in question 4, relative to crowd-sourced monitors, suggest anything about a possible political bias?
+
+Yes. The government seems to me monitoring in a specific location, which is around 31.58 latitude and 74.330 in longitude. This cluster is tighter when compared with the crowd sourced. 
 
 ### Question 6
 
@@ -199,11 +209,11 @@ pooled_data <- bind_rows(govt, crowdsourced)
 # Draw a random sample of size 1000
 random_sample <- pooled_data %>% sample_n(1000)
 
-# View the random sample
-print(random_sample)
-
 # Find mean of random_sample.  
 mean_random_sample <- mean(random_sample$PM)
+
+# Print
+print(paste("The mean of the random sample is",mean_random_sample, "µg/m³"))
 
 ```
 
@@ -227,15 +237,14 @@ stratified_sample <- pooled_data %>%
 
 # Find mean of stratified sample 
 mean_strat_sample <- mean(stratified_sample$PM)
+
+# Print
+print(paste("The mean of the strat sample is", mean_strat_sample, "µg/m³"))
+
 ```
 
 #### Question 6.2
 
 Compare estimated means of PM 2.5 for each sampling strategy to the NASA estimate of 89.2 $\mu g/m^3$. Which sample seems to match the satellite data best? What would you recommend the Prime Minister do? Does your proposed sampling strategy rely more on government or on crowd-sourced data? Why might that be the case?
-
-```{r}
-print(mean_random_sample)
-print(mean_strat_sample)
-```
 
 It would seem that the stratified sample matches the NASA estimate the best. This would make sense because it reduces some of the biases from the government monitors, which are all in close proximity to 31.58 latitude. I would recommend the Prime Minister to use stratified sampling because it will rely more on crowd sourced data since it is more spread out in latitude across Lahore, giving a more accurate representation of air pollution. 
