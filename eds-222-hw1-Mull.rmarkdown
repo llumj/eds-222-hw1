@@ -6,6 +6,8 @@ editor_options:
   chunk_output_type: console
 ---
 
+
+
 ## Background
 
 *(The case study in this exercise is based on reality, but does not include actual observational data.)*
@@ -29,17 +31,25 @@ In answering the following questions, please consider the lecture content from c
 ### Question 1
 
 #### Load Libraries 
+
+
 ```{r}
 library(tidyverse)
 library(here)
 ```
 
+
+
 Load the data from each source and label it as `crowdsourced` and `govt` accordingly. For example:
+
+
 
 ``` {r}
 crowdsourced <- readRDS(file.path("data", "airpol-PK-crowdsourced.RDS"))
 govt <- readRDS(file.path("data", "airpol-PK-govt.RDS"))
 ```
+
+
 
 ::: callout-warning
 There's an implicit assumption about file organization in the code above. What is it? How can you make the code work?
@@ -51,6 +61,8 @@ I noticed that the RDS files were stored in a folder called data. I needed ot ma
 
 There are 5488 rows in crowdsourced and 1960 rows in govt. 
 
+
+
 ```{r}
 # Use nrow to search number of rows in data frames
 print(nrow(crowdsourced))
@@ -58,11 +70,15 @@ print(nrow(crowdsourced))
 print(nrow(govt))
 ```
 
+
+
 2.  Each monitor is located at a unique latitude and longitude location. How many unique monitors are in each dataset?
 
 For this question I did it two different ways. First, I used groupby() and mutated a new column. Then, I printed the length of unique values in that series. 
 
 The second way I used distict() to find unique pairs in lat and long and then counted them. This was seemed cleaner in code. 
+
+
 
 ```{r}
 # Use groupby() and mutate to find the number of unique combinations and store them in a new series called lat_long 
@@ -82,6 +98,8 @@ unique_govt <- govt %>%
 print(unique_govt)
 
 ```
+
+
 
 
 ::: callout-tip
@@ -107,6 +125,8 @@ There could be numerous biases in the data offered. Some included disproportiona
 ### Question 3
 
 1.  For both the government data and the crowd-sourced data, report the sample mean, sample minimum, and sample maximum value of PM 2.5 (measured in $\mu g/m^3$).
+
+
 
 ```{r}
 # Use mean and buck to find the mean of PM series in crowdsourced data frame
@@ -146,6 +166,8 @@ max_govt_pm <- max(govt$PM)
 print(max_govt_pm)
 ```
 
+
+
 2.  Discuss any key differences that you see between these two samples.
 
 The govt data set shows about half of average pollution than the crowd sourced.
@@ -157,6 +179,8 @@ Yes this was expected. The government is cookin' the books. In other words, they
 ### Question 4
 
 Use the location of the air pollution stations for both of the sampling strategies to generate a map showing locations of each observation. Color the two samples with different colors to highlight how each sample obtains measurements from different parts of the city.
+
+
 
 ```{r}
 # Use ggplot to map air pollution locations
@@ -171,6 +195,8 @@ air_mon_location <- ggplot() +
                  color = "blue") + 
   labs(title = "Air Monitor locations around Lahore, Pakistan", x = "Longitude", y = "Latitude")
 ```
+
+
 
 
 ::: callout-tip
@@ -191,6 +217,8 @@ NASA's satellite data indicates that the average PM across Lahore is 89.2 $\mu g
 
 First, generate a *random sample* of size $n=1000$ air pollution records by (i) pooling observations across the government and the crowd-sourced data; and (ii) drawing observations at random from this pooled sample.
 
+
+
 ```{r}
 
 # Use bind_rows to pool data from both data frames 
@@ -208,11 +236,15 @@ mean_random_sample <- mean(random_sample$PM)
 ```
 
 
+
+
 ::: callout-tip
 `bind_rows()` may be helpful.
 :::
 
 Second, create a *stratified random sample*. Do so by (i) stratifying your pooled data-set into strata of 0.01 degrees of latitude, and (ii) randomly sampling 200 air pollution observations from each stratum.
+
+
 
 ```{r}
 # Create strata by rounding the latitude to 0.01 degrees
@@ -229,13 +261,20 @@ stratified_sample <- pooled_data %>%
 mean_strat_sample <- mean(stratified_sample$PM)
 ```
 
+
+
 #### Question 6.2
 
 Compare estimated means of PM 2.5 for each sampling strategy to the NASA estimate of 89.2 $\mu g/m^3$. Which sample seems to match the satellite data best? What would you recommend the Prime Minister do? Does your proposed sampling strategy rely more on government or on crowd-sourced data? Why might that be the case?
+
+
 
 ```{r}
 print(mean_random_sample)
 print(mean_strat_sample)
 ```
 
+
+
 It would seem that the stratified sample matches the NASA estimate the best. This would make sense because it reduces some of the biases from the government monitors, which are all in close proximity to 31.58 latitude. I would recommend the Prime Minister to use stratified sampling because it will rely more on crowd sourced data since it is more spread out in latitude across Lahore, giving a more accurate representation of air pollution. 
+
