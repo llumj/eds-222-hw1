@@ -8,7 +8,7 @@ execute:
   warning: false
 format: 
   html: 
-    code-fold: true
+    code-fold: false
 ---
 
 
@@ -100,15 +100,15 @@ The goal of pollution monitoring in Lahore is to measure the average pollution c
 
 1.  What is the *population* in this setting? Please be precise.
 
-The population is the entire pollution across Lahore. I.e. every single place would have a pollution associated with its location. 
+The population is the entire pollution across Lahore. I.e. every single place would have a pollution associated with its location between November 2018 through November 2019.
 
 2.  What are the *samples* in this setting? Please be precise.
 
-The sample is the select locations across lahore. Some in peoples homes voluntarily and some from government agencies. 
+The samples are government sourced and crowd sourced data 
 
 3.  These samples were not randomly collected from across locations in Lahore. Given the sampling approaches described above, discuss possible biases that may enter when we use these samples to construct estimates of population parameters.
 
-There could be numerous biases in the data offered. Some included disproportionate pollution numbers based on where sensors are location. Voluntary houses with sensors could be more affluent than others who did not participate. Better insulated homes could skew the numbers to show less pollution. Government sensors have been suspected of biased loactions to show better air quality for Lahore. 
+There could be numerous biases in the data offered. Some included disproportionate pollution numbers based on where sensors are location. Voluntary houses with sensors could be more affluent than others who did not participate. Better insulated homes could skew the numbers to show less pollution. Government sensors have been suspected of biased locations to show better air quality for Lahore. 
 
 ### Question 3
 
@@ -158,7 +158,7 @@ The govt data set shows about half of average pollution than the crowd sourced.
 
 3.  Are the differences in mean pollution as expected, given what we know about the sampling strategies?
 
-Yes this was expected. The government is cookin' the books. In other words, they are possibly manipulating the data by selecting more favorable locations. 
+Yes this was expected. The government is cookin' the books. In other words, they are possibly manipulating the data by selecting more favorable locations. Voluntary houses with sensors could be more affluent than others who did not participate and live in less polluted areas.  
 
 ### Question 4
 
@@ -169,13 +169,12 @@ Use the location of the air pollution stations for both of the sampling strategi
 air_mon_location <- ggplot() +
   geom_point(data = crowdsourced, 
              aes(x = longitude, 
-                 y = latitude), 
-                 color = "red") +
-  geom_point(data = govt, 
-             aes(x = longitude, 
-                 y = latitude), 
-                 color = "blue") + 
-  labs(title = "Air Monitor locations around Lahore, Pakistan", x = "Longitude", y = "Latitude")
+                 y = latitude, 
+                 color = 'Crowdsourced')) +
+  geom_point(data = govt, aes(x = longitude, y = latitude, color = "Government"))+ 
+  labs(title = "Air Monitor locations around Lahore, Pakistan", x = "Longitude", y = "Latitude") +
+   scale_color_manual("",values = c("Crowdsourced" = "red", "Government" = "blue"))
+
 
 print(air_mon_location)
 ```
@@ -208,6 +207,9 @@ pooled_data <- bind_rows(govt, crowdsourced)
 
 # Draw a random sample of size 1000
 random_sample <- pooled_data %>% sample_n(1000)
+
+# Check dimensions 
+print(dim(random_sample))
 
 # Find mean of random_sample.  
 mean_random_sample <- mean(random_sample$PM)
